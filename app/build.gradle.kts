@@ -52,6 +52,13 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
+            resValue("string", "app_name", "洛小跳-debug")
+            resValue("string", "app_version_code", gitVersionCode.toString())
+            resValue(
+                "string",
+                "app_version_name",
+                "${defaultConfig.versionName}.d$gitVersionCode.$gitVersionName"
+            )
             resValue("color", "ic_launcher_background", "#FFEB3B")
             isMinifyEnabled = false
             proguardFiles(
@@ -62,6 +69,12 @@ android {
         }
         release {
             isMinifyEnabled = true
+            resValue("string", "app_version_code", gitVersionCode.toString())
+            resValue(
+                "string",
+                "app_version_name",
+                "${defaultConfig.versionName}.r$gitVersionCode.$gitVersionName"
+            )
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
