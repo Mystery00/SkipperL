@@ -52,7 +52,6 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "洛小跳-debug")
             resValue("string", "app_version_code", gitVersionCode.toString())
             resValue(
                 "string",
@@ -119,6 +118,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    //mmkv
+    implementation("com.tencent:mmkv:1.3.1")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

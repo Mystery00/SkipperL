@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SkipperL</string>
+    <string name="accessibility_description">SkipperL aims to utilize the system’s accessibility API to automatically click on the close buttons of advertisements. By using the accessibility API, we can provide a more convenient way to dismiss ads, offering users a smoother and uninterrupted app experience. This functionality will reduce the interference caused by ads, thereby enhancing user satisfaction and overall usability.</string>
 </resources>
