@@ -109,7 +109,6 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -120,6 +119,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     //mmkv
     implementation("com.tencent:mmkv:1.3.1")
+    //animated-navigation-bar
+    implementation("com.exyte:animated-navigation-bar:1.0.0")
+    //compose-settings
+    implementation("com.github.alorma:compose-settings-ui-m3:0.27.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
