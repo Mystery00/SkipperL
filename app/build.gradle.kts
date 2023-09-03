@@ -121,8 +121,6 @@ dependencies {
     implementation("com.tencent:mmkv:1.3.1")
     //animated-navigation-bar
     implementation("com.exyte:animated-navigation-bar:1.0.0")
-    //compose-settings
-    implementation("com.github.alorma:compose-settings-ui-m3:0.27.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

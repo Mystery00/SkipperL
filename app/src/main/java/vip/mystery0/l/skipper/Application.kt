@@ -6,6 +6,7 @@ import com.tencent.mmkv.MMKV
 class Application : Application() {
     override fun onCreate() {
         super.onCreate()
+        context = this
         MMKV.initialize(this)
     }
 }

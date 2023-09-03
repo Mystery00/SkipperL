@@ -13,12 +13,21 @@ class SkipperViewModel : ViewModel() {
     //全局禁用开关
     private val _globalEnable = MutableStateFlow(RunningRule.enable)
     val globalEnable: StateFlow<Boolean> = _globalEnable
+
     //全局关键词
     val globalKeywords = mutableStateListOf<String>()
 
     init {
         viewModelScope.launch {
             globalKeywords.addAll(SkipperStore.globalKeywords)
+        }
+    }
+
+    fun changeGlobalEnable(enable: Boolean) {
+        viewModelScope.launch {
+            SkipperStore.enable = enable
+            RunningRule.enable = enable
+            _globalEnable.value = enable
         }
     }
 

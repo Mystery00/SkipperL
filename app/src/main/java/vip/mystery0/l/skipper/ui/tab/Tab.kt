@@ -3,6 +3,7 @@ package vip.mystery0.l.skipper.ui.tab
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import vip.mystery0.l.skipper.R
+import vip.mystery0.l.skipper.viewmodel.SkipperViewModel
 
 internal enum class Tab(
     val index: Int,
@@ -32,4 +33,4 @@ internal enum class Tab(
     ),
 }
 
-typealias TabContent = @Composable () -> Unit
+typealias TabContent = @Composable (SkipperViewModel) -> Unit
