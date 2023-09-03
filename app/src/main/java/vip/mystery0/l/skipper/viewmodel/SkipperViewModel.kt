@@ -31,10 +31,11 @@ class SkipperViewModel : ViewModel() {
         }
     }
 
-    fun updateGlobalKeywords(keywords: List<String>) {
-        globalKeywords.clear()
-        globalKeywords.addAll(keywords)
+    fun updateGlobalKeywords(keywords: Set<String>) {
+        SkipperStore.globalKeywords = keywords
         RunningRule.globalKeywords.clear()
         RunningRule.globalKeywords.addAll(keywords)
+        globalKeywords.clear()
+        globalKeywords.addAll(keywords)
     }
 }

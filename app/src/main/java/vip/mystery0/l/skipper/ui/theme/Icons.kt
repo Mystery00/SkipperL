@@ -9,8 +9,14 @@ object Icons {
     val appIcon: Painter
         @Composable
         get() = painterResource(id = R.drawable.ic_app_logo)
+    val close: Painter
+        @Composable
+        get() = painterResource(id = R.drawable.ic_close)
 
     object Settings {
+        val arrow: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.ic_settings_arrow)
         val enable: Painter
             @Composable
             get() = painterResource(id = R.drawable.ic_settings_enable)

@@ -25,6 +25,16 @@ object SkipperStore {
             return kv.decodeBool(debugKey, true)
         }
 
+    //拦截文本
+    private const val interceptTextKey = "interceptText"
+    var interceptText: String
+        set(value) {
+            kv.encode(interceptTextKey, value)
+        }
+        get() {
+            return kv.decodeString(interceptTextKey) ?: "侦测到在途的导弹攻击，已成功拦截"
+        }
+
     //全局关键词
     private const val globalKeywordsKey = "globalKeywords"
     var globalKeywords: Set<String>
