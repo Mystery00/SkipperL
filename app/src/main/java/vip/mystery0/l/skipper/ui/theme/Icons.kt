@@ -12,6 +12,9 @@ object Icons {
     val close: Painter
         @Composable
         get() = painterResource(id = R.drawable.ic_close)
+    val tips: Painter
+        @Composable
+        get() = painterResource(id = R.drawable.ic_action_tips)
 
     object Settings {
         val arrow: Painter
@@ -23,5 +26,8 @@ object Icons {
         val keywords: Painter
             @Composable
             get() = painterResource(id = R.drawable.ic_settings_keywords)
+        val status: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.ic_settings_status)
     }
 }

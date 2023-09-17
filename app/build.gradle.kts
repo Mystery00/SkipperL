@@ -93,7 +93,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.4"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -121,6 +121,8 @@ dependencies {
     implementation("com.tencent:mmkv:1.3.1")
     //animated-navigation-bar
     implementation("com.exyte:animated-navigation-bar:1.0.0")
+    //coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

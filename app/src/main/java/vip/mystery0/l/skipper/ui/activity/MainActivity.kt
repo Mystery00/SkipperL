@@ -1,41 +1,81 @@
 package vip.mystery0.l.skipper.ui.activity
 
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.Intent
+import android.provider.Settings
+import android.util.Log
+import android.view.accessibility.AccessibilityManager
 import androidx.activity.viewModels
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.items.dropletbutton.DropletButton
 import vip.mystery0.l.skipper.appName
+import vip.mystery0.l.skipper.model.FlowEventBus
+import vip.mystery0.l.skipper.services.SkipperService
 import vip.mystery0.l.skipper.ui.tab.Tab
+import vip.mystery0.l.skipper.ui.theme.Icons
 import vip.mystery0.l.skipper.viewmodel.SkipperViewModel
 
 class MainActivity : BaseComposeActivity() {
     private val viewModel: SkipperViewModel by viewModels()
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun BuildContent() {
-        var selectedIndex by remember { mutableStateOf(0) }
+        var isAccessibilityServiceEnabled by remember { mutableStateOf(isAccessibilityServiceEnabled()) }
+        var selectedIndex by remember { mutableIntStateOf(0) }
+        val showDialog = remember { mutableStateOf(false) }
+
+        LaunchedEffect("init") {
+            FlowEventBus.subscribe<Boolean>(this@MainActivity, SkipperService.EVENT_KEY) {
+                Log.i("TAG", "onCreate: subscribe: $it")
+                isAccessibilityServiceEnabled = it
+            }
+        }
 
         Scaffold(
             topBar = {
-                TopAppBar(title = { Text(text = appName) })
+                TopAppBar(
+                    title = { Text(text = appName) },
+                    actions = {
+                        if (!isAccessibilityServiceEnabled) {
+                            IconButton(onClick = {
+                                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                            }) {
+                                Icon(
+                                    painter = Icons.tips,
+                                    contentDescription = null,
+                                    tint = LocalContentColor.current,
+                                )
+                            }
+                        }
+                    },
+                )
             },
             bottomBar = {
                 AnimatedNavigationBar(
@@ -69,6 +109,10 @@ class MainActivity : BaseComposeActivity() {
                 }
             }
         }
+        if (!isAccessibilityServiceEnabled) {
+            showDialog.value = true
+        }
+        BuildDialog(show = showDialog)
     }
 
     @Composable
@@ -95,5 +139,45 @@ class MainActivity : BaseComposeActivity() {
             )
             Text(text = tab.label)
         }
+    }
+
+    @Composable
+    fun BuildDialog(show: MutableState<Boolean>) {
+        if (!show.value) return
+        AlertDialog(
+            onDismissRequest = { show.value = false },
+            title = {
+                Text("无障碍服务未启用")
+            },
+            text = {
+                Text("请在设置中启用无障碍服务")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                        show.value = false
+                    }
+                ) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        show.value = false
+                    }
+                ) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            },
+        )
+    }
+
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        val accessibilityManager = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
+        val accessibilityServices =
+            accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_SPOKEN)
+        return accessibilityServices.any { it.id == "${packageName}/${SkipperService::class.java.name}" }
     }
 }
