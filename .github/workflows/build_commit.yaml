@@ -46,5 +46,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.apk.outputs.versionName }}
+          body: ${{ steps.apk.outputs.versionName }}
           files: |
             ${{ env.OUTPUT_DIR }}/SkipperL-${{ steps.apk.outputs.versionName }}-${{ steps.apk.outputs.versionCode }}.apk
