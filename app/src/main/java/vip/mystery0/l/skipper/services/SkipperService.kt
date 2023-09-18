@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
@@ -12,6 +13,8 @@ import vip.mystery0.l.skipper.model.FlowEventBus
 import vip.mystery0.l.skipper.model.RunningRule
 
 class SkipperService : AccessibilityService() {
+    private var toast: Toast? = null
+
     @OptIn(DelicateCoroutinesApi::class)
     private val scope = CoroutineScope(newFixedThreadPoolContext(5, "SkipperL"))
 
@@ -34,6 +37,7 @@ class SkipperService : AccessibilityService() {
                         if (RunningRule.debug)
                             Log.d(TAG, "onAccessibilityEvent: ${it.packageName} -> ${it.text}")
                         it.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                        toast(RunningRule.interceptText)
                     }
                 }
             }
@@ -50,6 +54,7 @@ class SkipperService : AccessibilityService() {
                                         "onAccessibilityEvent: ${it.packageName} -> ${it.text}"
                                     )
                                 it.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                                toast(RunningRule.interceptText)
                             }
                         }
                     }
@@ -74,6 +79,12 @@ class SkipperService : AccessibilityService() {
     }
 
     override fun onInterrupt() {
+    }
+
+    private fun toast(text: String) {
+        toast?.cancel()
+        toast = Toast.makeText(this, text, Toast.LENGTH_SHORT)
+        toast?.show()
     }
 
     override fun onServiceConnected() {
