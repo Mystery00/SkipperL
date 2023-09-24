@@ -8,17 +8,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
-import vip.mystery0.l.skipper.model.FlowEventBus
+import org.greenrobot.eventbus.EventBus
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import vip.mystery0.l.skipper.model.RunningRule
 import vip.mystery0.l.skipper.store.RecordStore
 
-class SkipperService : AccessibilityService() {
+class SkipperService : AccessibilityService(), KoinComponent {
     @OptIn(DelicateCoroutinesApi::class)
     private val scope = CoroutineScope(newFixedThreadPoolContext(5, "SkipperL"))
 
+    private val eventBus: EventBus by inject()
+
     companion object {
         private const val TAG = "SkipperService"
-        const val EVENT_KEY = "accessibilityServiceEnabled"
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -83,24 +86,26 @@ class SkipperService : AccessibilityService() {
 
     private fun toast(text: String) {
         //TODO 怎么显示Toast呢
+//        scope.launch(Dispatchers.Main) {
+//            Toast.makeText(context, text, Toast.LENGTH_SHORT)
+//                .show()
+//        }
     }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
         Log.i(TAG, "onServiceConnected: service connected")
-        scope.launch {
-            FlowEventBus.post(EVENT_KEY, true)
-        }
+        eventBus.post(MessageEvent(true))
         scope.launch {
             RunningRule.loadRules()
         }
     }
 
     override fun onDestroy() {
-        scope.launch {
-            FlowEventBus.post(EVENT_KEY, false)
-        }
+        eventBus.post(MessageEvent(false))
         super.onDestroy()
         Log.i(TAG, "onDestroy: service destroyed")
     }
 }
+
+data class MessageEvent(val enable: Boolean)

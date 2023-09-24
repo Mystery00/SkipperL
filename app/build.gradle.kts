@@ -138,6 +138,8 @@ dependencies {
     //moshi
     implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.14.0")
+    //eventbus
+    implementation("org.greenrobot:eventbus:3.3.1")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

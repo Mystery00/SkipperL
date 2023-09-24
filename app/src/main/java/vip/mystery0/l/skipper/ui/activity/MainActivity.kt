@@ -2,6 +2,7 @@ package vip.mystery0.l.skipper.ui.activity
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
+import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityManager
@@ -22,8 +23,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,9 +37,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.items.dropletbutton.DropletButton
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.koin.android.ext.android.inject
 import vip.mystery0.l.skipper.R
 import vip.mystery0.l.skipper.appName
-import vip.mystery0.l.skipper.model.FlowEventBus
+import vip.mystery0.l.skipper.services.MessageEvent
 import vip.mystery0.l.skipper.services.SkipperService
 import vip.mystery0.l.skipper.ui.tab.Tab
 import vip.mystery0.l.skipper.ui.theme.Icons
@@ -49,21 +55,21 @@ val LocalAccessibilityServiceEnabled = compositionLocalOf<Boolean> {
 }
 
 class MainActivity : BaseComposeActivity() {
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
     private val viewModel: SkipperViewModel by viewModels()
+    private var accessibilityServiceEnabled = MutableStateFlow(true)
+    private val eventBus: EventBus by inject()
+    private val accessibilityManager: AccessibilityManager by inject()
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun BuildContent() {
-        var isAccessibilityServiceEnabled by remember { mutableStateOf(isAccessibilityServiceEnabled()) }
+        val isAccessibilityServiceEnabled by accessibilityServiceEnabled.collectAsState()
         var selectedIndex by remember { mutableIntStateOf(0) }
         val showDialog = remember { mutableStateOf(false) }
-
-        LaunchedEffect("init") {
-            FlowEventBus.subscribe<Boolean>(this@MainActivity, SkipperService.EVENT_KEY) {
-                Log.i("TAG", "onCreate: subscribe: $it")
-                isAccessibilityServiceEnabled = it
-            }
-        }
 
         Scaffold(
             topBar = {
@@ -184,9 +190,26 @@ class MainActivity : BaseComposeActivity() {
     }
 
     private fun isAccessibilityServiceEnabled(): Boolean {
-        val accessibilityManager = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
         val accessibilityServices =
             accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_SPOKEN)
         return accessibilityServices.any { it.id == "${packageName}/${SkipperService::class.java.name}" }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Suppress("unused")
+    fun onMessageEvent(event: MessageEvent) {
+        Log.i(TAG, "onAccessibilityServiceEnabledChange: $event")
+        accessibilityServiceEnabled.value = event.enable
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        eventBus.register(this)
+        super.onCreate(savedInstanceState)
+        accessibilityServiceEnabled.value = isAccessibilityServiceEnabled()
+    }
+
+    override fun onDestroy() {
+        eventBus.unregister(this)
+        super.onDestroy()
     }
 }
