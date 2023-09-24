@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import vip.mystery0.l.skipper.R
 import vip.mystery0.l.skipper.appVersionCode
 import vip.mystery0.l.skipper.appVersionName
 import vip.mystery0.l.skipper.model.RunningRule
@@ -74,43 +75,38 @@ val settingsTab: TabContent = @Composable { viewModel ->
                 ) {
                     val isAccessibilityServiceEnabled = LocalAccessibilityServiceEnabled.current
                     if (isAccessibilityServiceEnabled) {
-                        Text(
-                            "规则更新时间：${
-                                Instant.ofEpochMilli(lastUpdateTime).atZone(ZoneId.systemDefault())
-                                    .format(
-                                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                                    )
-                            }"
-                        )
-                        Text(
-                            "规则数量：${RunningRule.rules.values.sumOf { it.size }}"
-                        )
+                        val updateTime = Instant.ofEpochMilli(lastUpdateTime)
+                            .atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        val ruleSize = RunningRule.rules.values.sumOf { it.size }
+                        Text(stringResource(id = R.string.hint_rule_update_time, updateTime))
+                        Text(stringResource(id = R.string.hint_rule_size, ruleSize))
                         Button(
                             enabled = ruleState.refreshing.not(),
                             onClick = { viewModel.refreshRuleList() },
                         ) {
-                            Text("更新规则")
+                            Text(stringResource(id = R.string.action_update_rule))
                         }
                     } else {
                         val context = LocalContext.current
-                        Text("请先启用无障碍服务")
+                        Text(stringResource(id = R.string.hint_accessibility_off))
                         Button(
                             onClick = {
                                 context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                             },
                         ) {
-                            Text("跳转到无障碍设置")
+                            Text(stringResource(id = R.string.action_open_accessibility))
                         }
                     }
                 }
             }
         }
-        SettingsGroup(title = "设置") {
+        SettingsGroup(title = stringResource(id = R.string.pref_category_settings)) {
             val enable by viewModel.globalEnable.collectAsState()
             SettingsSwitchComp(
                 icon = Icons.Settings.enable,
-                title = "全局启用",
-                subtitle = "全局启用",
+                title = stringResource(id = R.string.pref_title_global_enable),
+                subtitle = stringResource(id = R.string.pref_subtitle_global_enable),
                 checked = enable,
             ) {
                 viewModel.changeGlobalEnable(!enable)
@@ -118,7 +114,7 @@ val settingsTab: TabContent = @Composable { viewModel ->
             val globalKeywords = viewModel.globalKeywords
             SettingsTextCustomSubtitleComp(
                 icon = Icons.Settings.keywords,
-                title = "全局关键词",
+                title = stringResource(id = R.string.pref_title_global_keywords),
                 subtitle = {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                         globalKeywords.forEach { keyword ->
@@ -145,17 +141,17 @@ val settingsTab: TabContent = @Composable { viewModel ->
             )
             SettingsClickableComp(
                 icon = Icons.Settings.status,
-                title = "查看当前运行规则状态",
-                subtitle = "打印当前运行规则状态，用于调试",
+                title = stringResource(id = R.string.pref_title_show_running_info),
+                subtitle = stringResource(id = R.string.pref_subtitle_show_running_info),
                 onClick = {
                     showRunningDialog.value = true
                 }
             )
         }
-        SettingsGroup(title = "关于") {
+        SettingsGroup(title = stringResource(id = R.string.pref_category_about)) {
             SettingsClickableImageComp(
                 icon = Icons.appIcon,
-                title = "应用版本",
+                title = stringResource(id = R.string.pref_title_app_version),
                 subtitle = "${appVersionName}(${appVersionCode})",
                 onClick = {},
             )
@@ -167,7 +163,7 @@ val settingsTab: TabContent = @Composable { viewModel ->
         AlertDialog(
             onDismissRequest = { viewModel.clearRuleMessage() },
             title = {
-                Text("更新规则失败")
+                Text(stringResource(id = R.string.hint_update_rule_failed))
             },
             text = {
                 Text(ruleState.message)
@@ -191,7 +187,7 @@ fun BuildRunningDialog(show: MutableState<Boolean>) {
     AlertDialog(
         onDismissRequest = { show.value = false },
         title = {
-            Text("当前运行规则")
+            Text(stringResource(id = R.string.hint_running_rule_info))
         },
         text = {
             Text(RunningRule.toString())

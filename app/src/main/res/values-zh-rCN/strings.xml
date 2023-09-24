@@ -2,4 +2,29 @@
 <resources>
     <string name="app_name">洛小跳</string>
     <string name="accessibility_description">洛小跳旨在利用系统的无障碍API实现自动点击广告的关闭按钮。通过使用无障碍API，我们可以提供更便捷的方式来关闭广告，为用户提供更流畅、无干扰的应用体验。这个功能将减少广告对用户的干扰，提高用户满意度和使用体验。</string>
+
+    <string name="hint_accessibility_off">无障碍服务未启用</string>
+    <string name="hint_enable_accessibility">请在设置中启用无障碍服务</string>
+    <string name="hint_rule_update_time">规则更新时间：%s</string>
+    <string name="hint_rule_size">规则数量：%d</string>
+    <string name="hint_update_rule_failed">更新规则失败</string>
+    <string name="hint_running_rule_info">当前运行规则</string>
+
+    <string name="action_save">保存</string>
+    <string name="action_update_rule">更新规则</string>
+    <string name="action_open_accessibility">跳转到无障碍设置</string>
+
+    <string name="tab_apps">应用</string>
+    <string name="tab_statistics">统计</string>
+    <string name="tab_settings">设置</string>
+
+    <string name="pref_category_settings">设置</string>
+    <string name="pref_title_global_enable">全局启用</string>
+    <string name="pref_subtitle_global_enable">全局启用开关，如果无障碍开启的情况下此开关禁用，那么依旧不会生效</string>
+    <string name="pref_title_global_keywords">全局关键词</string>
+    <string name="pref_title_show_running_info">查看当前运行规则状态</string>
+    <string name="pref_subtitle_show_running_info">打印当前运行规则状态，用于调试</string>
+
+    <string name="pref_category_about">关于</string>
+    <string name="pref_title_app_version">应用版本</string>
 </resources>

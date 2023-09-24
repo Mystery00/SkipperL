@@ -9,7 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import vip.mystery0.l.skipper.R
 
 @Composable
 internal fun TextEditDialog(
@@ -41,7 +43,7 @@ internal fun TextEditDialog(
                     onDismissRequest()
                 },
             ) {
-                Text("保存")
+                Text(stringResource(id = R.string.action_save))
             }
         },
     )

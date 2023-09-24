@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.items.dropletbutton.DropletButton
+import vip.mystery0.l.skipper.R
 import vip.mystery0.l.skipper.appName
 import vip.mystery0.l.skipper.model.FlowEventBus
 import vip.mystery0.l.skipper.services.SkipperService
@@ -145,7 +146,7 @@ class MainActivity : BaseComposeActivity() {
                 dropletColor = MaterialTheme.colorScheme.primary,
                 size = 24.dp,
             )
-            Text(text = tab.label)
+            Text(text = stringResource(id = tab.label))
         }
     }
 
@@ -155,10 +156,10 @@ class MainActivity : BaseComposeActivity() {
         AlertDialog(
             onDismissRequest = { show.value = false },
             title = {
-                Text("无障碍服务未启用")
+                Text(stringResource(id = R.string.hint_accessibility_off))
             },
             text = {
-                Text("请在设置中启用无障碍服务")
+                Text(stringResource(id = R.string.hint_enable_accessibility))
             },
             confirmButton = {
                 TextButton(

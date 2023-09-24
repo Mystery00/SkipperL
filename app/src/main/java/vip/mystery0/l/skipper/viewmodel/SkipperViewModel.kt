@@ -105,7 +105,7 @@ class SkipperViewModel : ViewModel(), KoinComponent {
     fun refreshAppList() {
         viewModelScope.launch(CoroutineExceptionHandler { _, throwable ->
             Log.e(TAG, "refreshAppList: ", throwable)
-            _appState.value = AppState(message = throwable.message ?: "未知错误")
+            _appState.value = AppState(message = throwable.message ?: throwable.javaClass.name)
         }) {
             _appState.value = AppState(refreshing = true)
             _appState.value = AppState(list = getAllLauncherIconPackages())
@@ -115,7 +115,8 @@ class SkipperViewModel : ViewModel(), KoinComponent {
     fun refreshRecordAppList() {
         viewModelScope.launch(CoroutineExceptionHandler { _, throwable ->
             Log.e(TAG, "refreshRecordAppList: ", throwable)
-            _recordState.value = RecordState(message = throwable.message ?: "未知错误")
+            _recordState.value =
+                RecordState(message = throwable.message ?: throwable.javaClass.name)
         }) {
             _recordState.value = RecordState(refreshing = true)
             val records = withContext(Dispatchers.IO) {
@@ -145,7 +146,7 @@ class SkipperViewModel : ViewModel(), KoinComponent {
     fun refreshRuleList() {
         viewModelScope.launch(CoroutineExceptionHandler { _, throwable ->
             Log.e(TAG, "refreshRuleList: ", throwable)
-            _ruleState.value = RuleState(message = throwable.message ?: "未知错误")
+            _ruleState.value = RuleState(message = throwable.message ?: throwable.javaClass.name)
         }) {
             _ruleState.value = RuleState(refreshing = true)
             val rules = fetchAllCustomRule()
