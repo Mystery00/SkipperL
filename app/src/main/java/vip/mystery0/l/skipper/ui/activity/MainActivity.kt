@@ -21,8 +21,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +42,10 @@ import vip.mystery0.l.skipper.services.SkipperService
 import vip.mystery0.l.skipper.ui.tab.Tab
 import vip.mystery0.l.skipper.ui.theme.Icons
 import vip.mystery0.l.skipper.viewmodel.SkipperViewModel
+
+val LocalAccessibilityServiceEnabled = compositionLocalOf<Boolean> {
+    error("No LocalAccessibilityServiceEnabled provided")
+}
 
 class MainActivity : BaseComposeActivity() {
     private val viewModel: SkipperViewModel by viewModels()
@@ -102,10 +108,12 @@ class MainActivity : BaseComposeActivity() {
             }
         ) { paddingValues ->
             Box(modifier = Modifier.padding(paddingValues)) {
-                when (selectedIndex) {
-                    Tab.APPS.index -> Tab.APPS.content(viewModel)
-                    Tab.STATISTICS.index -> Tab.STATISTICS.content(viewModel)
-                    Tab.SETTINGS.index -> Tab.SETTINGS.content(viewModel)
+                CompositionLocalProvider(LocalAccessibilityServiceEnabled provides isAccessibilityServiceEnabled) {
+                    when (selectedIndex) {
+                        Tab.APPS.index -> Tab.APPS.content(viewModel)
+                        Tab.STATISTICS.index -> Tab.STATISTICS.content(viewModel)
+                        Tab.SETTINGS.index -> Tab.SETTINGS.content(viewModel)
+                    }
                 }
             }
         }

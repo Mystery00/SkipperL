@@ -1,13 +1,22 @@
 package vip.mystery0.l.skipper.ui.tab
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
@@ -19,21 +28,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import vip.mystery0.l.skipper.appVersionCode
 import vip.mystery0.l.skipper.appVersionName
 import vip.mystery0.l.skipper.model.RunningRule
+import vip.mystery0.l.skipper.ui.activity.LocalAccessibilityServiceEnabled
 import vip.mystery0.l.skipper.ui.settings.SettingsClickableComp
 import vip.mystery0.l.skipper.ui.settings.SettingsClickableImageComp
 import vip.mystery0.l.skipper.ui.settings.SettingsGroup
 import vip.mystery0.l.skipper.ui.settings.SettingsSwitchComp
 import vip.mystery0.l.skipper.ui.settings.SettingsTextCustomSubtitleComp
 import vip.mystery0.l.skipper.ui.theme.Icons
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 val settingsTab: TabContent = @Composable { viewModel ->
+    val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
+    val ruleState by viewModel.ruleState.collectAsState()
+
     val showRunningDialog = remember { mutableStateOf(false) }
 
     Column(
@@ -41,6 +59,52 @@ val settingsTab: TabContent = @Composable { viewModel ->
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
+        Card(
+            modifier = Modifier
+                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier.padding(16.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    modifier = Modifier.width(IntrinsicSize.Max),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    val isAccessibilityServiceEnabled = LocalAccessibilityServiceEnabled.current
+                    if (isAccessibilityServiceEnabled) {
+                        Text(
+                            "规则更新时间：${
+                                Instant.ofEpochMilli(lastUpdateTime).atZone(ZoneId.systemDefault())
+                                    .format(
+                                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                                    )
+                            }"
+                        )
+                        Text(
+                            "规则数量：${RunningRule.rules.values.sumOf { it.size }}"
+                        )
+                        Button(
+                            enabled = ruleState.refreshing.not(),
+                            onClick = { viewModel.refreshRuleList() },
+                        ) {
+                            Text("更新规则")
+                        }
+                    } else {
+                        val context = LocalContext.current
+                        Text("请先启用无障碍服务")
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                            },
+                        ) {
+                            Text("跳转到无障碍设置")
+                        }
+                    }
+                }
+            }
+        }
         SettingsGroup(title = "设置") {
             val enable by viewModel.globalEnable.collectAsState()
             SettingsSwitchComp(
@@ -99,6 +163,26 @@ val settingsTab: TabContent = @Composable { viewModel ->
     }
 
     BuildRunningDialog(show = showRunningDialog)
+    if (ruleState.message.isNotBlank()) {
+        AlertDialog(
+            onDismissRequest = { viewModel.clearRuleMessage() },
+            title = {
+                Text("更新规则失败")
+            },
+            text = {
+                Text(ruleState.message)
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.clearRuleMessage()
+                    }
+                ) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+        )
+    }
 }
 
 @Composable

@@ -54,4 +54,14 @@ object SkipperStore {
         get() {
             return kv.decodeStringSet(disabledAppListKey) ?: emptySet()
         }
+
+    //规则上一次更新时间
+    private const val lastUpdateTimeKey = "lastUpdateTime"
+    var lastUpdateTime: Long
+        set(value) {
+            kv.encode(lastUpdateTimeKey, value)
+        }
+        get() {
+            return kv.decodeLong(lastUpdateTimeKey, 0L)
+        }
 }

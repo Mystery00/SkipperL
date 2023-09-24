@@ -4,17 +4,15 @@ import android.accessibilityservice.AccessibilityService
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import vip.mystery0.l.skipper.model.FlowEventBus
 import vip.mystery0.l.skipper.model.RunningRule
+import vip.mystery0.l.skipper.store.RecordStore
 
 class SkipperService : AccessibilityService() {
-    private var toast: Toast? = null
-
     @OptIn(DelicateCoroutinesApi::class)
     private val scope = CoroutineScope(newFixedThreadPoolContext(5, "SkipperL"))
 
@@ -38,6 +36,7 @@ class SkipperService : AccessibilityService() {
                             Log.d(TAG, "onAccessibilityEvent: ${it.packageName} -> ${it.text}")
                         it.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                         toast(RunningRule.interceptText)
+                        RecordStore.saveRecord(it.packageName, it.text)
                     }
                 }
             }
@@ -55,6 +54,7 @@ class SkipperService : AccessibilityService() {
                                     )
                                 it.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                                 toast(RunningRule.interceptText)
+                                RecordStore.saveRecord(it.packageName, it.text)
                             }
                         }
                     }
@@ -82,9 +82,7 @@ class SkipperService : AccessibilityService() {
     }
 
     private fun toast(text: String) {
-        toast?.cancel()
-        toast = Toast.makeText(this, text, Toast.LENGTH_SHORT)
-        toast?.show()
+        //TODO 怎么显示Toast呢
     }
 
     override fun onServiceConnected() {
@@ -92,6 +90,9 @@ class SkipperService : AccessibilityService() {
         Log.i(TAG, "onServiceConnected: service connected")
         scope.launch {
             FlowEventBus.post(EVENT_KEY, true)
+        }
+        scope.launch {
+            RunningRule.loadRules()
         }
     }
 

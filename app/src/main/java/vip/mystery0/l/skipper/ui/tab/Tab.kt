@@ -21,9 +21,7 @@ internal enum class Tab(
         1,
         "统计",
         icon = R.drawable.ic_tab_statistics,
-        content = {
-
-        }
+        content = recordsTap,
     ),
     SETTINGS(
         2,
